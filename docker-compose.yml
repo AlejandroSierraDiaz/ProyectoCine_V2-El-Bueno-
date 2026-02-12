@@ -7,10 +7,10 @@ services:
       POSTGRES_PASSWORD: cine_password
       POSTGRES_DB: cine_db
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - cine_v2_el_bueno_data:/var/lib/postgresql/data
     restart: always
 
 volumes:
-  postgres_data:
+  cine_v2_el_bueno_data:
