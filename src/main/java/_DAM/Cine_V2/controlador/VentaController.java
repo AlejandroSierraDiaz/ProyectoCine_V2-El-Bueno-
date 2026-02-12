@@ -1,6 +1,6 @@
 package _DAM.Cine_V2.controlador;
 
-import _DAM.Cine_V2.dto.VentaDTO;
+import _DAM.Cine_V2.dto.venta.VentaDTO;
 import _DAM.Cine_V2.servicio.VentaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

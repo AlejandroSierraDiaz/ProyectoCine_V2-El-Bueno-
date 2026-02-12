@@ -1,6 +1,6 @@
 package _DAM.Cine_V2.servicio;
 
-import _DAM.Cine_V2.dto.ActorDTO;
+import _DAM.Cine_V2.dto.actor.ActorDTO;
 import _DAM.Cine_V2.mapper.ActorMapper;
 import _DAM.Cine_V2.modelo.Actor;
 import _DAM.Cine_V2.repositorio.ActorRepository;

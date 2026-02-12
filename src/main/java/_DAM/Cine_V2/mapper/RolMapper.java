@@ -1,6 +1,6 @@
 package _DAM.Cine_V2.mapper;
 
-import _DAM.Cine_V2.dto.RolDTO;
+import _DAM.Cine_V2.dto.rol.RolDTO;
 import _DAM.Cine_V2.modelo.Rol;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

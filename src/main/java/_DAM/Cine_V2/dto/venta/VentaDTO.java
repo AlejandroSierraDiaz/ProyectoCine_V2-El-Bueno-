@@ -1,5 +1,6 @@
-package _DAM.Cine_V2.dto;
+package _DAM.Cine_V2.dto.venta;
 
+import _DAM.Cine_V2.dto.entrada.EntradaDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
