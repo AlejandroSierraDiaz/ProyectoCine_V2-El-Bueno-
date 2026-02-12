@@ -1,6 +1,7 @@
 package _DAM.Cine_V2.servicio;
 
-import _DAM.Cine_V2.dto.director.DirectorDTO;
+import _DAM.Cine_V2.dto.director.DirectorRequest;
+import _DAM.Cine_V2.dto.director.DirectorResponse;
 import _DAM.Cine_V2.mapper.DirectorMapper;
 import _DAM.Cine_V2.modelo.Director;
 import _DAM.Cine_V2.repositorio.DirectorRepository;
@@ -17,22 +18,32 @@ public class DirectorService {
     private final DirectorRepository directorRepository;
     private final DirectorMapper directorMapper;
 
-    public List<DirectorDTO> findAll() {
+    public List<DirectorResponse> findAll() {
         return directorRepository.findAll().stream()
-                .map(directorMapper::toDTO)
+                .map(directorMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
-    public DirectorDTO findById(Long id) {
+    public DirectorResponse findById(Long id) {
         return directorRepository.findById(id)
-                .map(directorMapper::toDTO)
+                .map(directorMapper::toResponse)
                 .orElseThrow(() -> new RuntimeException("Director no encontrado con ID: " + id));
     }
 
-    public DirectorDTO save(DirectorDTO directorDTO) {
-        Director director = directorMapper.toEntity(directorDTO);
+    public DirectorResponse create(DirectorRequest directorRequest) {
+        Director director = directorMapper.toEntity(directorRequest);
         Director saved = directorRepository.save(director);
-        return directorMapper.toDTO(saved);
+        return directorMapper.toResponse(saved);
+    }
+
+    public DirectorResponse update(Long id, DirectorRequest directorRequest) {
+        if (!directorRepository.existsById(id)) {
+            throw new RuntimeException("Director no encontrado con ID: " + id);
+        }
+        Director director = directorMapper.toEntity(directorRequest);
+        director.setId(id);
+        Director saved = directorRepository.save(director);
+        return directorMapper.toResponse(saved);
     }
 
     public void deleteById(Long id) {

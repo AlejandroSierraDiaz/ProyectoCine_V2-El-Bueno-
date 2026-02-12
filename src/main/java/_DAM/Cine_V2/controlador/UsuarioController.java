@@ -1,6 +1,7 @@
 package _DAM.Cine_V2.controlador;
 
-import _DAM.Cine_V2.dto.usuario.UsuarioDTO;
+import _DAM.Cine_V2.dto.usuario.UsuarioRequest;
+import _DAM.Cine_V2.dto.usuario.UsuarioResponse;
 import _DAM.Cine_V2.servicio.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,25 +19,24 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @GetMapping
-    public ResponseEntity<List<UsuarioDTO>> findAll() {
+    public ResponseEntity<List<UsuarioResponse>> findAll() {
         return ResponseEntity.ok(usuarioService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<UsuarioResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> create(@Valid @RequestBody UsuarioDTO usuarioDTO) {
-        return new ResponseEntity<>(usuarioService.save(usuarioDTO), HttpStatus.CREATED);
+    public ResponseEntity<UsuarioResponse> create(@Valid @RequestBody UsuarioRequest usuarioRequest) {
+        return new ResponseEntity<>(usuarioService.create(usuarioRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> update(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
-        UsuarioDTO toUpdate = new UsuarioDTO(id, usuarioDTO.email(), usuarioDTO.password(), usuarioDTO.enabled(),
-                usuarioDTO.roles());
-        return ResponseEntity.ok(usuarioService.save(toUpdate));
+    public ResponseEntity<UsuarioResponse> update(@PathVariable Long id,
+            @Valid @RequestBody UsuarioRequest usuarioRequest) {
+        return ResponseEntity.ok(usuarioService.update(id, usuarioRequest));
     }
 
     @DeleteMapping("/{id}")

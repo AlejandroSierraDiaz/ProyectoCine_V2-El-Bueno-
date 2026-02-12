@@ -1,6 +1,7 @@
 package _DAM.Cine_V2.controlador;
 
-import _DAM.Cine_V2.dto.pelicula.PeliculaDTO;
+import _DAM.Cine_V2.dto.pelicula.PeliculaRequest;
+import _DAM.Cine_V2.dto.pelicula.PeliculaResponse;
 import _DAM.Cine_V2.servicio.PeliculaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,25 +19,24 @@ public class PeliculaController {
     private final PeliculaService peliculaService;
 
     @GetMapping
-    public ResponseEntity<List<PeliculaDTO>> findAll() {
+    public ResponseEntity<List<PeliculaResponse>> findAll() {
         return ResponseEntity.ok(peliculaService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PeliculaDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<PeliculaResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(peliculaService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<PeliculaDTO> create(@Valid @RequestBody PeliculaDTO peliculaDTO) {
-        return new ResponseEntity<>(peliculaService.save(peliculaDTO), HttpStatus.CREATED);
+    public ResponseEntity<PeliculaResponse> create(@Valid @RequestBody PeliculaRequest peliculaRequest) {
+        return new ResponseEntity<>(peliculaService.create(peliculaRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PeliculaDTO> update(@PathVariable Long id, @Valid @RequestBody PeliculaDTO peliculaDTO) {
-        PeliculaDTO toUpdate = new PeliculaDTO(id, peliculaDTO.titulo(), peliculaDTO.duracion(),
-                peliculaDTO.edadMinima(), peliculaDTO.directorId(), peliculaDTO.actorIds());
-        return ResponseEntity.ok(peliculaService.save(toUpdate));
+    public ResponseEntity<PeliculaResponse> update(@PathVariable Long id,
+            @Valid @RequestBody PeliculaRequest peliculaRequest) {
+        return ResponseEntity.ok(peliculaService.update(id, peliculaRequest));
     }
 
     @DeleteMapping("/{id}")

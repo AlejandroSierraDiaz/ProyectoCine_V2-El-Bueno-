@@ -1,6 +1,7 @@
 package _DAM.Cine_V2.servicio;
 
-import _DAM.Cine_V2.dto.sala.SalaDTO;
+import _DAM.Cine_V2.dto.sala.SalaRequest;
+import _DAM.Cine_V2.dto.sala.SalaResponse;
 import _DAM.Cine_V2.mapper.SalaMapper;
 import _DAM.Cine_V2.modelo.Sala;
 import _DAM.Cine_V2.repositorio.SalaRepository;
@@ -17,22 +18,32 @@ public class SalaService {
     private final SalaRepository salaRepository;
     private final SalaMapper salaMapper;
 
-    public List<SalaDTO> findAll() {
+    public List<SalaResponse> findAll() {
         return salaRepository.findAll().stream()
-                .map(salaMapper::toDTO)
+                .map(salaMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
-    public SalaDTO findById(Long id) {
+    public SalaResponse findById(Long id) {
         return salaRepository.findById(id)
-                .map(salaMapper::toDTO)
+                .map(salaMapper::toResponse)
                 .orElseThrow(() -> new RuntimeException("Sala no encontrada con ID: " + id));
     }
 
-    public SalaDTO save(SalaDTO salaDTO) {
-        Sala sala = salaMapper.toEntity(salaDTO);
+    public SalaResponse create(SalaRequest salaRequest) {
+        Sala sala = salaMapper.toEntity(salaRequest);
         Sala saved = salaRepository.save(sala);
-        return salaMapper.toDTO(saved);
+        return salaMapper.toResponse(saved);
+    }
+
+    public SalaResponse update(Long id, SalaRequest salaRequest) {
+        if (!salaRepository.existsById(id)) {
+            throw new RuntimeException("Sala no encontrada con ID: " + id);
+        }
+        Sala sala = salaMapper.toEntity(salaRequest);
+        sala.setId(id);
+        Sala saved = salaRepository.save(sala);
+        return salaMapper.toResponse(saved);
     }
 
     public void deleteById(Long id) {

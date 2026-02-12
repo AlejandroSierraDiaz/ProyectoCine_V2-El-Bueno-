@@ -1,11 +1,13 @@
 package _DAM.Cine_V2.mapper;
 
-import _DAM.Cine_V2.dto.pelicula.PeliculaDTO;
+import _DAM.Cine_V2.dto.pelicula.PeliculaRequest;
+import _DAM.Cine_V2.dto.pelicula.PeliculaResponse;
 import _DAM.Cine_V2.modelo.Actor;
 import _DAM.Cine_V2.modelo.Pelicula;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 import java.util.Collections;
@@ -17,12 +19,19 @@ public abstract class PeliculaMapper {
 
     @Mapping(target = "directorId", source = "director.id")
     @Mapping(target = "actorIds", source = "actores", qualifiedByName = "mapActorsToIds")
-    public abstract PeliculaDTO toDTO(Pelicula pelicula);
+    public abstract PeliculaResponse toResponse(Pelicula pelicula);
 
     @Mapping(target = "director", ignore = true)
     @Mapping(target = "actores", ignore = true)
     @Mapping(target = "funciones", ignore = true)
-    public abstract Pelicula toEntity(PeliculaDTO peliculaDTO);
+    @Mapping(target = "id", ignore = true)
+    public abstract Pelicula toEntity(PeliculaRequest request);
+
+    @Mapping(target = "director", ignore = true)
+    @Mapping(target = "actores", ignore = true)
+    @Mapping(target = "funciones", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    public abstract void updateEntityFromRequest(PeliculaRequest request, @MappingTarget Pelicula pelicula);
 
     @Named("mapActorsToIds")
     public Set<Long> mapActorsToIds(Set<Actor> actors) {

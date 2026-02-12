@@ -1,6 +1,7 @@
 package _DAM.Cine_V2.controlador;
 
-import _DAM.Cine_V2.dto.rol.RolDTO;
+import _DAM.Cine_V2.dto.rol.RolRequest;
+import _DAM.Cine_V2.dto.rol.RolResponse;
 import _DAM.Cine_V2.servicio.RolService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,24 +19,23 @@ public class RolController {
     private final RolService rolService;
 
     @GetMapping
-    public ResponseEntity<List<RolDTO>> findAll() {
+    public ResponseEntity<List<RolResponse>> findAll() {
         return ResponseEntity.ok(rolService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RolDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<RolResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(rolService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<RolDTO> create(@Valid @RequestBody RolDTO rolDTO) {
-        return new ResponseEntity<>(rolService.save(rolDTO), HttpStatus.CREATED);
+    public ResponseEntity<RolResponse> create(@Valid @RequestBody RolRequest rolRequest) {
+        return new ResponseEntity<>(rolService.create(rolRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RolDTO> update(@PathVariable Long id, @Valid @RequestBody RolDTO rolDTO) {
-        RolDTO toUpdate = new RolDTO(id, rolDTO.nombre());
-        return ResponseEntity.ok(rolService.save(toUpdate));
+    public ResponseEntity<RolResponse> update(@PathVariable Long id, @Valid @RequestBody RolRequest rolRequest) {
+        return ResponseEntity.ok(rolService.update(id, rolRequest));
     }
 
     @DeleteMapping("/{id}")

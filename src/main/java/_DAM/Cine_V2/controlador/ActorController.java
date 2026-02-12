@@ -1,6 +1,7 @@
 package _DAM.Cine_V2.controlador;
 
-import _DAM.Cine_V2.dto.actor.ActorDTO;
+import _DAM.Cine_V2.dto.actor.ActorRequest;
+import _DAM.Cine_V2.dto.actor.ActorResponse;
 import _DAM.Cine_V2.servicio.ActorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,24 +19,23 @@ public class ActorController {
     private final ActorService actorService;
 
     @GetMapping
-    public ResponseEntity<List<ActorDTO>> findAll() {
+    public ResponseEntity<List<ActorResponse>> findAll() {
         return ResponseEntity.ok(actorService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ActorDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<ActorResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(actorService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<ActorDTO> create(@Valid @RequestBody ActorDTO actorDTO) {
-        return new ResponseEntity<>(actorService.save(actorDTO), HttpStatus.CREATED);
+    public ResponseEntity<ActorResponse> create(@Valid @RequestBody ActorRequest actorRequest) {
+        return new ResponseEntity<>(actorService.create(actorRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ActorDTO> update(@PathVariable Long id, @Valid @RequestBody ActorDTO actorDTO) {
-        ActorDTO toUpdate = new ActorDTO(id, actorDTO.nombre());
-        return ResponseEntity.ok(actorService.save(toUpdate));
+    public ResponseEntity<ActorResponse> update(@PathVariable Long id, @Valid @RequestBody ActorRequest actorRequest) {
+        return ResponseEntity.ok(actorService.update(id, actorRequest));
     }
 
     @DeleteMapping("/{id}")

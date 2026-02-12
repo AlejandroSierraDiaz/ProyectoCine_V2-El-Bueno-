@@ -1,6 +1,7 @@
 package _DAM.Cine_V2.controlador;
 
-import _DAM.Cine_V2.dto.sala.SalaDTO;
+import _DAM.Cine_V2.dto.sala.SalaRequest;
+import _DAM.Cine_V2.dto.sala.SalaResponse;
 import _DAM.Cine_V2.servicio.SalaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,24 +19,23 @@ public class SalaController {
     private final SalaService salaService;
 
     @GetMapping
-    public ResponseEntity<List<SalaDTO>> findAll() {
+    public ResponseEntity<List<SalaResponse>> findAll() {
         return ResponseEntity.ok(salaService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SalaDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<SalaResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(salaService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<SalaDTO> create(@Valid @RequestBody SalaDTO salaDTO) {
-        return new ResponseEntity<>(salaService.save(salaDTO), HttpStatus.CREATED);
+    public ResponseEntity<SalaResponse> create(@Valid @RequestBody SalaRequest salaRequest) {
+        return new ResponseEntity<>(salaService.create(salaRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SalaDTO> update(@PathVariable Long id, @Valid @RequestBody SalaDTO salaDTO) {
-        SalaDTO toUpdate = new SalaDTO(id, salaDTO.nombre(), salaDTO.capacidad());
-        return ResponseEntity.ok(salaService.save(toUpdate));
+    public ResponseEntity<SalaResponse> update(@PathVariable Long id, @Valid @RequestBody SalaRequest salaRequest) {
+        return ResponseEntity.ok(salaService.update(id, salaRequest));
     }
 
     @DeleteMapping("/{id}")

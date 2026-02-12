@@ -1,6 +1,7 @@
 package _DAM.Cine_V2.controlador;
 
-import _DAM.Cine_V2.dto.entrada.EntradaDTO;
+import _DAM.Cine_V2.dto.entrada.EntradaRequest;
+import _DAM.Cine_V2.dto.entrada.EntradaResponse;
 import _DAM.Cine_V2.servicio.EntradaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,25 +19,24 @@ public class EntradaController {
     private final EntradaService entradaService;
 
     @GetMapping
-    public ResponseEntity<List<EntradaDTO>> findAll() {
+    public ResponseEntity<List<EntradaResponse>> findAll() {
         return ResponseEntity.ok(entradaService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntradaDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<EntradaResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(entradaService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<EntradaDTO> create(@Valid @RequestBody EntradaDTO entradaDTO) {
-        return new ResponseEntity<>(entradaService.save(entradaDTO), HttpStatus.CREATED);
+    public ResponseEntity<EntradaResponse> create(@Valid @RequestBody EntradaRequest entradaRequest) {
+        return new ResponseEntity<>(entradaService.create(entradaRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EntradaDTO> update(@PathVariable Long id, @Valid @RequestBody EntradaDTO entradaDTO) {
-        EntradaDTO toUpdate = new EntradaDTO(id, entradaDTO.codigo(), entradaDTO.fila(), entradaDTO.asiento(),
-                entradaDTO.estado(), entradaDTO.funcionId(), entradaDTO.ventaId());
-        return ResponseEntity.ok(entradaService.save(toUpdate));
+    public ResponseEntity<EntradaResponse> update(@PathVariable Long id,
+            @Valid @RequestBody EntradaRequest entradaRequest) {
+        return ResponseEntity.ok(entradaService.update(id, entradaRequest));
     }
 
     @DeleteMapping("/{id}")

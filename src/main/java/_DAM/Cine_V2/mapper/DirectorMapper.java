@@ -1,13 +1,22 @@
 package _DAM.Cine_V2.mapper;
 
-import _DAM.Cine_V2.dto.director.DirectorDTO;
+import _DAM.Cine_V2.dto.director.DirectorRequest;
+import _DAM.Cine_V2.dto.director.DirectorResponse;
 import _DAM.Cine_V2.modelo.Director;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface DirectorMapper {
-    DirectorDTO toDTO(Director director);
+    @Mapping(target = "peliculas", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    Director toEntity(DirectorRequest request);
 
-    Director toEntity(DirectorDTO directorDTO);
+    DirectorResponse toResponse(Director director);
+
+    @Mapping(target = "peliculas", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    void updateEntityFromRequest(DirectorRequest request, @MappingTarget Director director);
 }

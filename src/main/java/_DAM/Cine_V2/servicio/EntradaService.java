@@ -1,14 +1,13 @@
 package _DAM.Cine_V2.servicio;
 
-import _DAM.Cine_V2.dto.entrada.EntradaDTO;
+import _DAM.Cine_V2.dto.entrada.EntradaRequest;
+import _DAM.Cine_V2.dto.entrada.EntradaResponse;
 import _DAM.Cine_V2.mapper.EntradaMapper;
 import _DAM.Cine_V2.modelo.Entrada;
 import _DAM.Cine_V2.modelo.EstadoEntrada;
 import _DAM.Cine_V2.modelo.Funcion;
-import _DAM.Cine_V2.modelo.Venta;
 import _DAM.Cine_V2.repositorio.EntradaRepository;
 import _DAM.Cine_V2.repositorio.FuncionRepository;
-import _DAM.Cine_V2.repositorio.VentaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,57 +21,78 @@ public class EntradaService {
 
     private final EntradaRepository entradaRepository;
     private final FuncionRepository funcionRepository;
-    private final VentaRepository ventaRepository;
     private final EntradaMapper entradaMapper;
 
     @Transactional(readOnly = true)
-    public List<EntradaDTO> findAll() {
+    public List<EntradaResponse> findAll() {
         return entradaRepository.findAll().stream()
-                .map(entradaMapper::toDTO)
+                .map(entradaMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public EntradaDTO findById(Long id) {
+    public EntradaResponse findById(Long id) {
         return entradaRepository.findById(id)
-                .map(entradaMapper::toDTO)
+                .map(entradaMapper::toResponse)
                 .orElseThrow(() -> new RuntimeException("Entrada no encontrada con ID: " + id));
     }
 
     @Transactional
-    public EntradaDTO save(EntradaDTO entradaDTO) {
+    public EntradaResponse create(EntradaRequest entradaRequest) {
         // Validation: Seat availability
-        if (isSeatOccupied(entradaDTO.funcionId(), entradaDTO.fila(), entradaDTO.asiento())) {
+        if (isSeatOccupied(entradaRequest.funcionId(), entradaRequest.fila(), entradaRequest.asiento())) {
             throw new RuntimeException(
-                    "El asiento " + entradaDTO.fila() + "-" + entradaDTO.asiento() + " ya está ocupado.");
+                    "El asiento " + entradaRequest.fila() + "-" + entradaRequest.asiento() + " ya está ocupado.");
         }
 
-        Entrada entrada = entradaMapper.toEntity(entradaDTO);
+        Entrada entrada = entradaMapper.toEntity(entradaRequest);
 
-        if (entradaDTO.funcionId() != null) {
-            Funcion funcion = funcionRepository.findById(entradaDTO.funcionId())
-                    .orElseThrow(() -> new RuntimeException("Funcion no encontrada con ID: " + entradaDTO.funcionId()));
+        if (entradaRequest.funcionId() != null) {
+            Funcion funcion = funcionRepository.findById(entradaRequest.funcionId())
+                    .orElseThrow(
+                            () -> new RuntimeException("Funcion no encontrada con ID: " + entradaRequest.funcionId()));
             entrada.setFuncion(funcion);
         }
 
-        if (entradaDTO.ventaId() != null) {
-            Venta venta = ventaRepository.findById(entradaDTO.ventaId())
-                    .orElseThrow(() -> new RuntimeException("Venta no encontrada con ID: " + entradaDTO.ventaId()));
-            entrada.setVenta(venta);
-        }
+        // Note: We do not set Venta here as EntradaRequest does not include ventaId.
+        // Entradas are typically created via VentaService.
 
-        // Default status if not provided
         if (entrada.getEstado() == null) {
             entrada.setEstado(EstadoEntrada.VENDIDA);
         }
 
         Entrada saved = entradaRepository.save(entrada);
-        return entradaMapper.toDTO(saved);
+        return entradaMapper.toResponse(saved);
+    }
+
+    @Transactional
+    public EntradaResponse update(Long id, EntradaRequest entradaRequest) {
+        Entrada entrada = entradaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Entrada no encontrada con ID: " + id));
+
+        // If seat changing, check availability?
+        // For simplicity, we assume generic update logic.
+        // Ideally should check if fila/asiento changed and if new one is occupied.
+        if (entradaRequest.fila() != entrada.getFila() || entradaRequest.asiento() != entrada.getAsiento()) {
+            if (isSeatOccupied(entradaRequest.funcionId(), entradaRequest.fila(), entradaRequest.asiento())) {
+                throw new RuntimeException("El nuevo asiento ya está ocupado.");
+            }
+        }
+
+        entradaMapper.updateEntityFromRequest(entradaRequest, entrada);
+
+        if (entradaRequest.funcionId() != null) {
+            Funcion funcion = funcionRepository.findById(entradaRequest.funcionId())
+                    .orElseThrow(
+                            () -> new RuntimeException("Funcion no encontrada con ID: " + entradaRequest.funcionId()));
+            entrada.setFuncion(funcion);
+        }
+
+        Entrada saved = entradaRepository.save(entrada);
+        return entradaMapper.toResponse(saved);
     }
 
     public boolean isSeatOccupied(Long funcionId, int fila, int asiento) {
-        // This is a naive implementation. In a real system, we'd have a specific query.
-        // Or we check existing tickets for this function and seat.
         List<Entrada> entradas = entradaRepository.findByFuncionId(funcionId);
         return entradas.stream().anyMatch(
                 e -> e.getFila() == fila && e.getAsiento() == asiento && e.getEstado() != EstadoEntrada.CANCELADA);

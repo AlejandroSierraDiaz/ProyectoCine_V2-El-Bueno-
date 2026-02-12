@@ -1,6 +1,7 @@
 package _DAM.Cine_V2.controlador;
 
-import _DAM.Cine_V2.dto.funcion.FuncionDTO;
+import _DAM.Cine_V2.dto.funcion.FuncionRequest;
+import _DAM.Cine_V2.dto.funcion.FuncionResponse;
 import _DAM.Cine_V2.servicio.FuncionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,25 +19,24 @@ public class FuncionController {
     private final FuncionService funcionService;
 
     @GetMapping
-    public ResponseEntity<List<FuncionDTO>> findAll() {
+    public ResponseEntity<List<FuncionResponse>> findAll() {
         return ResponseEntity.ok(funcionService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FuncionDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<FuncionResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(funcionService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<FuncionDTO> create(@Valid @RequestBody FuncionDTO funcionDTO) {
-        return new ResponseEntity<>(funcionService.save(funcionDTO), HttpStatus.CREATED);
+    public ResponseEntity<FuncionResponse> create(@Valid @RequestBody FuncionRequest funcionRequest) {
+        return new ResponseEntity<>(funcionService.create(funcionRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FuncionDTO> update(@PathVariable Long id, @Valid @RequestBody FuncionDTO funcionDTO) {
-        FuncionDTO toUpdate = new FuncionDTO(id, funcionDTO.fechaHora(), funcionDTO.precio(), funcionDTO.peliculaId(),
-                funcionDTO.salaId());
-        return ResponseEntity.ok(funcionService.save(toUpdate));
+    public ResponseEntity<FuncionResponse> update(@PathVariable Long id,
+            @Valid @RequestBody FuncionRequest funcionRequest) {
+        return ResponseEntity.ok(funcionService.update(id, funcionRequest));
     }
 
     @DeleteMapping("/{id}")
