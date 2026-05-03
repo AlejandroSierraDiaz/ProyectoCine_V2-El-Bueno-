@@ -27,13 +27,15 @@ public class DataLoader implements CommandLineRunner {
 
         @Override
         public void run(String... args) throws Exception {
-                if (rolRepository.count() > 0) {
+                if (usuarioRepository.count() > 0) {
                         return; // Data already exists
                 }
 
                 // Roles
-                Rol roleAdmin = rolRepository.save(Rol.builder().nombre("ADMIN").build());
-                Rol roleUser = rolRepository.save(Rol.builder().nombre("USER").build());
+                Rol roleAdmin = rolRepository.findByNombre("ADMIN")
+                                .orElseGet(() -> rolRepository.save(Rol.builder().nombre("ADMIN").build()));
+                Rol roleUser = rolRepository.findByNombre("USER")
+                                .orElseGet(() -> rolRepository.save(Rol.builder().nombre("USER").build()));
 
                 // Users
                 Usuario admin = Usuario.builder()
